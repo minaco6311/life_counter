@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人生カウンター - カップラーメン換算付き</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #ef4444 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            margin-bottom: 3rem;
+            text-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        label {
+            display: block;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1.125rem;
+            border-radius: 1rem;
+            border: 4px solid white;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: inset 8px 8px 16px rgba(0,0,0,0.1), inset -8px -8px 16px rgba(255,255,255,0.5);
+            transition: all 0.3s;
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            box-shadow: inset 8px 8px 16px rgba(0,0,0,0.1), inset -8px -8px 16px rgba(255,255,255,0.5), 0 0 0 4px rgba(250, 204, 21, 0.5);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 20px 20px 60px rgba(0,0,0,0.3), -20px -20px 60px rgba(255,255,255,0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card-blue {
+            background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+        }
+
+        .card-green {
+            background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+        }
+
+        .card-yellow {
+            background: linear-gradient(135deg, #facc15 0%, #f97316 100%);
+        }
+
+        .card-pink {
+            background: linear-gradient(135deg, #f472b6 0%, #9333ea 100%);
+        }
+
+        .card-ramen {
+            background: linear-gradient(135deg, #f87171 0%, #fb923c 50%, #facc15 100%);
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-right: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .card-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-ramen .card-value {
+            font-size: 4rem;
+        }
+
+        .card-unit {
+            font-size: 1.25rem;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .ramen-content {
+            text-align: center;
+        }
+
+        .ramen-subtitle {
+            font-size: 1.5rem;
+            color: white;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .ramen-note {
+            font-size: 1.125rem;
+            color: white;
+            opacity: 0.8;
+            margin-top: 1rem;
+        }
+
+        .summary-section {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-top: 2rem;
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .summary-box {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .summary-text {
+            color: #1f2937;
+            font-size: 1.125rem;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+        }
+
+        .copy-button {
+            width: 100%;
+            margin-top: 1rem;
+            background: linear-gradient(to right, #3b82f6, #9333ea);
+            color: white;
+            font-weight: bold;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 1.125rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .copy-button:hover {
+            background: linear-gradient(to right, #2563eb, #7c3aed);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .placeholder {
+            text-align: center;
+            color: white;
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            opacity: 0.9;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎂 人生カウンター 🎂</h1>
+
+        <div class="input-section">
+            <label for="birthdate">あなたの生年月日を入力してください</label>
+            <input type="date" id="birthdate">
+        </div>
+
+        <div id="results" class="hidden">
+            <div class="results-grid">
+                <div class="card card-blue">
+                    <div class="card-header">
+                        <span class="card-icon">📅</span>
+                        <h3 class="card-title">日数</h3>
+                    </div>
+                    <p class="card-value" id="days">0</p>
+                    <p class="card-unit">日</p>
+                </div>
+
+                <div class="card card-green">
+                    <div class="card-header">
+                        <span class="card-icon">⏰</span>
+                        <h3 class="card-title">時間数</h3>
+                    </div>
+                    <p class="card-value" id="hours">0</p>
+                    <p class="card-unit">時間</p>
+                </div>
+
+                <div class="card card-yellow">
+                    <div class="card-header">
+                        <span class="card-icon">⏱️</span>
+                        <h3 class="card-title">分数</h3>
+                    </div>
+                    <p class="card-value" id="minutes">0</p>
+                    <p class="card-unit">分</p>
+                </div>
+
+                <div class="card card-pink">
+                    <div class="card-header">
+                        <span class="card-icon">⏲️</span>
+                        <h3 class="card-title">秒数</h3>
+                    </div>
+                    <p class="card-value" id="seconds">0</p>
+                    <p class="card-unit">秒</p>
+                </div>
+
+                <div class="card card-ramen">
+                    <div class="ramen-content">
+                        <h3 class="card-title">
+                            <span style="font-size: 3rem;">🍜</span>
+                            カップラーメン換算
+                        </h3>
+                        <p class="card-value" id="cupnoodles">0</p>
+                        <p class="ramen-subtitle">個分のカップラーメンが作れました!</p>
+                        <p class="ramen-note">(3分で1個作れる計算)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3 class="summary-title">📋 結果まとめ</h3>
+                <div class="summary-box">
+                    <pre class="summary-text" id="summaryText"></pre>
+                    <button class="copy-button" onclick="copyResults()">📋 結果をコピー</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="placeholder" class="placeholder">
+            👆 生年月日を入力すると、あなたの人生の時間が表示されます!
+        </div>
+    </div>
+
+    <script>
+        let birthDate = '';
+        let updateInterval;
+
+        document.getElementById('birthdate').addEventListener('change', function(e) {
+            birthDate = e.target.value;
+            if (birthDate) {
+                document.getElementById('placeholder').classList.add('hidden');
+                document.getElementById('results').classList.remove('hidden');
+                
+                if (updateInterval) {
+                    clearInterval(updateInterval);
+                }
+                
+                updateTime();
+                updateInterval = setInterval(updateTime, 1000);
+            }
+        });
+
+        function updateTime() {
+            if (!birthDate) return;
+
+            const birth = new Date(birthDate);
+            const now = new Date();
+            const diff = now - birth;
+
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            const cupNoodles = Math.floor(minutes / 3);
+
+            document.getElementById('days').textContent = days.toLocaleString();
+            document.getElementById('hours').textContent = hours.toLocaleString();
+            document.getElementById('minutes').textContent = minutes.toLocaleString();
+            document.getElementById('seconds').textContent = seconds.toLocaleString();
+            document.getElementById('cupnoodles').textContent = cupNoodles.toLocaleString();
+
+            const summaryText = `🎂 人生カウンター 結果 🎂
+
+生年月日: ${birthDate}
+計測日時: ${now.toLocaleString('ja-JP')}
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+📅 日数: ${days.toLocaleString()} 日
+⏰ 時間数: ${hours.toLocaleString()} 時間
+⏱️ 分数: ${minutes.toLocaleString()} 分
+⏲️ 秒数: ${seconds.toLocaleString()} 秒
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🍜 カップラーメン換算
+${cupNoodles.toLocaleString()} 個分のカップラーメンが作れました!
+(3分で1個作れる計算)
+
+━━━━━━━━━━━━━━━━━━━━━━`;
+
+            document.getElementById('summaryText').textContent = summaryText;
+        }
+
+        function copyResults() {
+            const text = document.getElementById('summaryText').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('📋 クリップボードにコピーしました!');
+            }).catch(err => {
+                console.error('コピーに失敗しました:', err);
+            });
+        }
+    </script>
+</body>
+</html>
